@@ -1,0 +1,14 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  application:
+    name: weather-metrics
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/weather_metrics}
+    username: ${DATABASE_USERNAME:weather_metrics}
+    password: ${DATABASE_PASSWORD:weather_metrics}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate

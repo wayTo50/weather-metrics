@@ -1,0 +1,238 @@
+{
+  "info": {
+    "_postman_id": "45cf356d-b41e-42ac-8df2-f9ee97295032",
+    "name": "Weather Metrics API",
+    "description": "API tests for the Weather Metrics service. Start the application before running the collection.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    }
+  ],
+  "item": [
+    {
+      "name": "Register first reading for sensor 1",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"sensorId\": \"postman-sensor-1\",\n  \"temperatureCelsius\": 10.0,\n  \"humidityPercent\": 50.0,\n  \"windSpeedMps\": 3.0,\n  \"recordedAt\": \"2099-01-01T10:00:00Z\"\n}"
+        },
+        "url": "{{baseUrl}}/api/v1/readings"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Reading is registered\", function () {",
+              "    pm.response.to.have.status(201);",
+              "    const response = pm.response.json();",
+              "    pm.expect(response.id).to.be.a(\"string\");",
+              "    pm.expect(response.sensorId).to.eql(\"postman-sensor-1\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Register second reading for sensor 1",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"sensorId\": \"postman-sensor-1\",\n  \"temperatureCelsius\": 20.0,\n  \"humidityPercent\": 55.0,\n  \"windSpeedMps\": 4.0,\n  \"recordedAt\": \"2099-01-01T11:00:00Z\"\n}"
+        },
+        "url": "{{baseUrl}}/api/v1/readings"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Reading is registered\", function () {",
+              "    pm.response.to.have.status(201);",
+              "    pm.expect(pm.response.json().sensorId).to.eql(\"postman-sensor-1\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Register reading for sensor 2",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"sensorId\": \"postman-sensor-2\",\n  \"temperatureCelsius\": 30.0,\n  \"humidityPercent\": 60.0,\n  \"windSpeedMps\": 5.0,\n  \"recordedAt\": \"2099-01-01T12:00:00Z\"\n}"
+        },
+        "url": "{{baseUrl}}/api/v1/readings"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Reading is registered\", function () {",
+              "    pm.response.to.have.status(201);",
+              "    pm.expect(pm.response.json().sensorId).to.eql(\"postman-sensor-2\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get average for all sensors",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v1/metrics/temperature/average?from=2099-01-01T00:00:00Z&to=2099-01-02T00:00:00Z"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Average is returned for all sensors\", function () {",
+              "    pm.response.to.have.status(200);",
+              "    pm.expect(pm.response.json().averageTemperatureCelsius).to.eql(20);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get average for one sensor",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v1/metrics/temperature/average?from=2099-01-01T00:00:00Z&to=2099-01-02T00:00:00Z&sensorId=postman-sensor-1"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Average is returned for one sensor\", function () {",
+              "    pm.response.to.have.status(200);",
+              "    pm.expect(pm.response.json().averageTemperatureCelsius).to.eql(15);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "List sensors",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v1/sensors"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Registered sensor IDs are returned\", function () {",
+              "    pm.response.to.have.status(200);",
+              "    pm.expect(pm.response.json().sensorIds).to.include.members([\"postman-sensor-1\", \"postman-sensor-2\"]);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get average when no readings match",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v1/metrics/temperature/average?from=2098-01-01T00:00:00Z&to=2098-01-02T00:00:00Z"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Null average is returned\", function () {",
+              "    pm.response.to.have.status(200);",
+              "    pm.expect(pm.response.json().averageTemperatureCelsius).to.be.null;",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reject invalid date range",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v1/metrics/temperature/average?from=2099-01-02T00:00:00Z&to=2099-01-01T00:00:00Z"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Invalid date range is rejected\", function () {",
+              "    pm.response.to.have.status(400);",
+              "    pm.expect(pm.response.json().message).to.eql(\"from must be earlier than to\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reject invalid registration request",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        },
+        "url": "{{baseUrl}}/api/v1/readings"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Invalid registration is rejected\", function () {",
+              "    pm.response.to.have.status(400);",
+              "    pm.expect(pm.response.json().message).to.eql(\"Validation failed\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
