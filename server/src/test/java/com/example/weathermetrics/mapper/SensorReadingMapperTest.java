@@ -13,7 +13,7 @@ class SensorReadingMapperTest {
     private final SensorReadingMapper mapper = new SensorReadingMapper();
 
     @Test
-    void responseWhenReadingIsProvidedAndExpectMappedToRegisterSensorDataResponse() {
+    void toRegisterSensorDataResponseWhenReadingIsProvidedAndExpectMappedResponse() {
         final var id = UUID.randomUUID();
         final var reading = mock(SensorReading.class);
         when(reading.getId()).thenReturn(id);

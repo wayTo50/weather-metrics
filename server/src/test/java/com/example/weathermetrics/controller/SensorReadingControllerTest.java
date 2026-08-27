@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -53,7 +52,7 @@ class SensorReadingControllerTest {
         final var expected = new RegisterSensorDataResponse(id, "sensor-1");
         final var request = new RegisterSensorDataRequest(
                 "sensor-1", 10.0, 50.0, 3.0, Instant.parse("2026-01-01T10:00:00Z"));
-        when(service.register(any())).thenReturn(expected);
+        when(service.register(request)).thenReturn(expected);
 
         final var result = mockMvc.perform(post("/api/v1/readings")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -62,6 +61,7 @@ class SensorReadingControllerTest {
                 .andReturn();
 
         assertThat(readResponse(result, RegisterSensorDataResponse.class)).isEqualTo(expected);
+        verify(service).register(request);
     }
 
     @Test
